@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import re
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+import os
 
 # URLs dos sites com os horários
 urls = [
@@ -38,7 +39,13 @@ def extrair_horario_e_trajeto(linha):
 # Função para configurar e autenticar a API do Google Sheets
 def google_sheets_auth():
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-    creds = ServiceAccountCredentials.from_json_keyfile_name('credentials.json', scope)
+    credentials_path = 'credentials.json'  # Certifique-se de que este caminho está correto
+
+    # Verifique se o arquivo existe no caminho especificado
+    if not os.path.isfile(credentials_path):
+        raise FileNotFoundError(f"Arquivo de credenciais não encontrado: {credentials_path}")
+
+    creds = ServiceAccountCredentials.from_json_keyfile_name(credentials_path, scope)
     client = gspread.authorize(creds)
     return client
 
